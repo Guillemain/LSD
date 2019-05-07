@@ -11,6 +11,9 @@
         <class>informations.Formulaire</class>
         <class>informations.Sondage</class>
         <class>informations.Hastag</class>
+        <class>informations.Profil</class>
+        <class>informations.Utilisateur</class>
+        
         
         
         <properties>

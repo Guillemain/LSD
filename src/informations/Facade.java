@@ -1,10 +1,8 @@
 package informations;
 
 
+import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Vector;
-
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -81,5 +79,28 @@ public class Facade {
 	public Hastag getHastag(String label){
 		return em.find(Hastag.class, label);
 	}
+	
+	public void ajoutUtilisateur(String id, String mdp) {
+		try {
+			em.persist(new Utilisateur(id,mdp));
+		} catch (Exception e) {
+			System.out.println("Ce nom est déjà pris ! :/");
+		}
+	}
+
+	public void ajoutProfil(String nom, String prenom, String genre, Calendar dateNaissance) {
+		em.persist(new Profil(nom,prenom,genre,dateNaissance));
+	}
+
+	public Collection<Profil> listeProfils() {
+		TypedQuery<Profil> req = em.createQuery("select p from Profil as p",Profil.class);
+		return req.getResultList();
+	}
+
+	public Collection<Profil> listeAmis(String idProfil) {
+		TypedQuery<Profil> req = em.createQuery("select amis from Profil as p",Profil.class);
+		return req.getResultList();
+	}
+
 	
 }
