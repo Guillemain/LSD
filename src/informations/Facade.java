@@ -23,49 +23,27 @@ public class Facade {
 	@PersistenceContext
 	private EntityManager em;
 	
-	/*
-	public void ajoutCompte(){
-		Comptes c = new Comptes();
-		em.persist(c);
-	}
-	*/
 	
 	public Hastag ajoutHastag(String label){
 		
-		Hastag h = new Hastag(label);
-		try{
-			em.persist(h);
-			return h;
-		}
-		catch (Exception e){
-			System.out.println("ce hashtag exite deja");
-			return em.find(Hastag.class, label);
-			
-		}
-		
+		Hastag h =  new Hastag(label);
+		em.persist(h);
+		System.out.println("ajout de l'hastag a la bdd");
+		return h;	
 	}
+	
+
 	
 	
 	public void ajoutFormulaire(Formulaire f){
 		em.persist(f);
+		System.out.println(f);
 	}
 	
 	public void ajoutSondage(Sondage s){
 		em.persist(s);
 	}
-	/*
-	public void associer(int personneId, int adresseId){
-		Personne p = em.find(Personne.class, personneId);
-		Collection<Adresse> ads = p.getAdresses();
-		ads.add(em.find(Adresse.class, adresseId));
-		p.setAdresses(ads);
-	}
 	
-	public Collection<Personne> listePersonne() {
-		TypedQuery<Personne> lp = em.createQuery("select p from Personne as p",Personne.class);
-		return lp.getResultList();
-	}
-	*/
 	public Collection<Formulaire> getlisteFormulaires() {
 		TypedQuery<Formulaire> lf = em.createQuery("select f from Formulaire as f",Formulaire.class);
 		return lf.getResultList();
@@ -77,7 +55,12 @@ public class Facade {
 	}
 	
 	public Hastag getHastag(String label){
-		return em.find(Hastag.class, label);
+		try{
+			return em.find(Hastag.class, label);
+		}catch (Exception e){
+			System.out.println("ce hashtag n'exite pas (get)");
+			return null;
+		}
 	}
 	
 	public void ajoutUtilisateur(String id, String mdp) {
@@ -100,6 +83,14 @@ public class Facade {
 	public Collection<Profil> listeAmis(String idProfil) {
 		TypedQuery<Profil> req = em.createQuery("select amis from Profil as p",Profil.class);
 		return req.getResultList();
+	}
+
+
+
+
+	public void update(Object o) {
+		
+		em.merge(o);
 	}
 
 	

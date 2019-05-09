@@ -2,10 +2,10 @@ package informations;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.ejb.EJB;
-import javax.persistence.TypedQuery;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -66,6 +66,7 @@ public class ServletOp extends HttpServlet {
 			String idf3 = request.getParameter("idf");
 			
 			Formulaire f2 = facade.trouverFormulaire(idf3);
+			//System.out.println("formulaire dans servlet :"+f2);
 			
 			String question = request.getParameter("question");
 			String p1 = request.getParameter("p");
@@ -84,7 +85,10 @@ public class ServletOp extends HttpServlet {
 			}
 			
 			facade.ajoutSondage(s);
+			//System.out.println("nb sondages avant : "+ f2.getListeSondages().size());
 			f2.addListeSondages(s);
+			facade.update(f2);
+			//System.out.println("nb sondages apres : "+ f2.getListeSondages().size());
 			
 			request.setAttribute("Formulaire",f2);
 			request.setAttribute("idf", idf3);
@@ -113,8 +117,7 @@ public class ServletOp extends HttpServlet {
 			break;
 			
 		case "test" :
-			System.out.println("test");
-			request.getRequestDispatcher("test.jsp").forward(request, response);
+			
 			break;
 			
 		case "finFormulaire" :
@@ -125,25 +128,64 @@ public class ServletOp extends HttpServlet {
 			String idf5 = request.getParameter("idf");
 			
 			Formulaire f3 = facade.trouverFormulaire(idf5);
+			ArrayList<String> labelh = new ArrayList<String>();
 			
 			if (!h1.equals("")){
-				Hastag ha1 = facade.ajoutHastag(h1);
+				
+				Hastag ha1 = null;
+				try{
+					ha1 = facade.ajoutHastag(h1);
+				}
+				catch (Exception e){
+					ha1 = facade.getHastag(h1);
+					System.out.println("recherche de l'hastag");
+				}
+				labelh.add(h1);
+				System.out.println(ha1);
+				System.out.println(f3);
 				f3.addListeHastags(ha1);
-				ha1.addListeFormulaires(f3);
-
+				facade.update(ha1);
+				//ha1.addListeFormulaires(f3);
+				System.out.println("ajout hashtag 1");
 			}
 			if (!h2.equals("")){
-				Hastag ha2 = facade.ajoutHastag(h2);
-				f3.addListeHastags(ha2);
-				ha2.addListeFormulaires(f3);
+				Hastag ha2 = null;
+				try{
+					ha2 = facade.ajoutHastag(h2);
+				}
+				catch (Exception e){
+					ha2 = facade.getHastag(h2);
+					System.out.println("recherche de l'hastag");
+				}
+				if (!labelh.contains(h2)){
+					f3.addListeHastags(ha2);
+				}
+				
+				facade.update(ha2);
+				//ha2.addListeFormulaires(f3);
+				System.out.println("ajout hashtag 2");
 			}
 			if (!h3.equals("")){
-				Hastag ha3 = facade.ajoutHastag(h3);
-				f3.addListeHastags(ha3);
-				ha3.addListeFormulaires(f3);
+				Hastag ha3 = null;
+				try{
+					ha3 = facade.ajoutHastag(h3);
+				}
+				catch (Exception e){
+					ha3 = facade.getHastag(h3);
+					System.out.println("recherche de l'hastag");
+				}
+				if (!labelh.contains(h3)){
+					f3.addListeHastags(ha3);
+				}
+				
+				facade.update(ha3);
+				
+				
+				//ha3.addListeFormulaires(f3);
+				System.out.println("ajout hashtag 3");
 
 			}
-			
+			facade.update(f3);
 			request.getRequestDispatcher("index.html").forward(request, response);
 			break;
 			
@@ -160,6 +202,11 @@ public class ServletOp extends HttpServlet {
 		case "accesFormulaire" :
 			int id = Integer.parseInt(request.getParameter("form"));
 			System.out.println(id);
+			Formulaire f6 = facade.trouverFormulaire(String.valueOf(id));
+			request.setAttribute("Formulaire",f6);
+			request.getRequestDispatcher("choixDeReponse.jsp").forward(request, response);
+			
+			break;
 		
 		case "recherche" :
 			request.setAttribute("echec",false);

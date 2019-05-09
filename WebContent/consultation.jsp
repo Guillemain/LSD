@@ -11,6 +11,7 @@
 <ul>
 <% 
 Collection<Formulaire> lf = (Collection<Formulaire>) request.getAttribute("listeFormulaires");
+System.out.println("nb_formulaire :"+String.valueOf(lf.size()));
 for (Formulaire f : lf){
 	String nom = f.getNom();
 	
@@ -19,9 +20,11 @@ for (Formulaire f : lf){
 	<ul>
 <%
 	Collection<Sondage> ls = f.getListeSondages();
+	System.out.println("nb_sondages :"+String.valueOf(ls.size()));
 	for (Sondage s : ls){
 		String question = s.getQuestion();
 		Collection<String> lp = s.getListePropositions();
+		System.out.println("nb_propositions :"+String.valueOf(lp.size()));
 %>
 		<li><%=question%></li>
 		<ul>

@@ -1,13 +1,10 @@
 package informations;
-import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
-
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 @Entity
 public class Sondage {
@@ -19,8 +16,8 @@ public class Sondage {
 	private Vector<String> ListePropositions;
 	
 	//@OneToMany(fetch = FetchType.EAGER)
-	//private Collection<Reponse> ListeReponses = new Vector<Reponse>();
-	//private Collection<Analyse> ListeAnalyses = new Vector<Analyse>();
+	//private List<Reponse> ListeReponses = new List<Reponse>();
+	//private List<Analyse> ListeAnalyses = new List<Analyse>();
 	private TypeSondage Type;
 	
 	
@@ -28,6 +25,18 @@ public class Sondage {
 		ListePropositions = new Vector<String>();
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setListePropositions(Vector<String> listePropositions) {
+		ListePropositions = listePropositions;
+	}
+
 	public String getQuestion() {
 		return Question;
 	}
@@ -35,14 +44,14 @@ public class Sondage {
 		Question = question;
 	}
 	
-	public Collection<String> getListePropositions() {
+	public List<String> getListePropositions() {
 		return ListePropositions;
 	}
 	public void addListePropositions(String proposition) {
 		ListePropositions.add(proposition);
 	}
 	/*
-	public Collection<Reponse> getListeReponses() {
+	public List<Reponse> getListeReponses() {
 		return ListeReponses;
 	}
 	public void addListeReponses(Reponse listeReponse) {

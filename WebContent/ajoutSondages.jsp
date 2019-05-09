@@ -9,15 +9,29 @@
 <body>
 <ul>
 <% 
+System.out.println("ajoutSondage");
 Formulaire f = (Formulaire) request.getAttribute("Formulaire");
+System.out.println("recuperation formulaire");
+System.out.println(f);
 String idf = (String) request.getAttribute("idf");
+System.out.println("recuperation identifiant");
+System.out.println(idf);
 Collection<Sondage> ls = (Collection<Sondage>) f.getListeSondages();
+System.out.println("recuperation liste sondage");
+
+
+System.out.println(ls);
+if (ls != null){
+System.out.println(ls.size());
 for (Sondage s : ls){
 	String question = s.getQuestion();
+	System.out.println("recuperation question");
 	
 %>
 <li><%=question%></li>
 <%	
+}
+System.out.println("fin boucle for");
 }
 %>
 </ul>

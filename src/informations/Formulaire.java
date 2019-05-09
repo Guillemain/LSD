@@ -1,7 +1,5 @@
 package informations;
 import java.util.Collection;
-import java.util.Vector;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -23,11 +21,27 @@ public class Formulaire {
 	private Calendar date; 
 	
 	@OneToMany(fetch = FetchType.EAGER)
-	private Collection<Sondage> ListeSondages = new Vector<Sondage>();
+	private Collection<Sondage> ListeSondages;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
-	private Collection<Hastag> ListeHastags = new Vector<Hastag>();
+	private Collection<Hastag> ListeHastags;
 	
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setDate(Calendar date) {
+		this.date = date;
+	}
+
+	public void setListeSondages(Collection<Sondage> listeSondages) {
+		ListeSondages = listeSondages;
+	}
+
+	public void setListeHastags(Collection<Hastag> listeHastags) {
+		ListeHastags = listeHastags;
+	}
+
 	private boolean privee;
 	//private Collection<Progil> Visiteurs;
 	//private Comptes Createur;
@@ -37,10 +51,13 @@ public class Formulaire {
 		Nom = nom;
 		privee = type;
 		date = Calendar.getInstance();
+		//ListeSondages = new Vector<Sondage>();
+		//ListeHastags = new Vector<Hastag>();
 	}
 	
 	public Formulaire(){
-		
+		//ListeSondages = new Vector<Sondage>();
+		//ListeHastags = new Vector<Hastag>();
 	}
 	
 	public String getNom() {
