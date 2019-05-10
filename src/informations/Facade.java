@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -22,57 +23,30 @@ public class Facade {
 	
 	@PersistenceContext
 	private EntityManager em;
-	
-	
-	public Hastag ajoutHastag(String label){
-		
-		Hastag h =  new Hastag(label);
-		em.persist(h);
-		System.out.println("ajout de l'hastag a la bdd");
-		return h;	
-	}
-	
 
-	
-	
-	public void ajoutFormulaire(Formulaire f){
-		em.persist(f);
-		System.out.println(f);
-	}
-	
-	public void ajoutSondage(Sondage s){
-		em.persist(s);
-	}
-	
-	public Collection<Formulaire> getlisteFormulaires() {
-		TypedQuery<Formulaire> lf = em.createQuery("select f from Formulaire as f",Formulaire.class);
-		return lf.getResultList();
-	
+
+	// Utilisateur
+
+	public void ajoutUtilisateur(String id, String mdp) throws EntityExistsException {
+		em.persist(new Utilisateur(id,mdp));
 	}
 
-	public Formulaire trouverFormulaire(String id) {
-		return em.find(Formulaire.class, Integer.parseInt(id));
-	}
-	
-	public Hastag getHastag(String label){
-		try{
-			return em.find(Hastag.class, label);
-		}catch (Exception e){
-			System.out.println("ce hashtag n'exite pas (get)");
-			return null;
+	public boolean connecterUtilisateur(String id, String mdp) {
+		System.out.println("Analyse mdp");
+		Utilisateur user = em.find(Utilisateur.class,id);
+		if (user!=null && user.mdp.equals(mdp)) {
+			System.out.println("Authorized");
+			return true;
 		}
-	}
-	
-	public void ajoutUtilisateur(String id, String mdp) {
-		try {
-			em.persist(new Utilisateur(id,mdp));
-		} catch (Exception e) {
-			System.out.println("Ce nom est déjà pris ! :/");
-		}
+		System.out.println("Denied");
+		return false;
 	}
 
-	public void ajoutProfil(String nom, String prenom, String genre, Calendar dateNaissance) {
-		em.persist(new Profil(nom,prenom,genre,dateNaissance));
+
+	// Profil
+
+	public void ajoutProfil(String pseudo, String genre, Calendar dateNaissance) {
+		em.persist(new Profil(pseudo,genre,dateNaissance));
 	}
 
 	public Collection<Profil> listeProfils() {
@@ -86,12 +60,38 @@ public class Facade {
 	}
 
 
-
-
-	public void update(Object o) {
-		
-		em.merge(o);
+	// Formulaire
+	
+	public Hastag ajoutHastag(String label){
+		Hastag h = new Hastag(label);
+		try{
+			em.persist(h);
+			return h;
+		} catch (Exception e){
+			System.out.println("ce hashtag exite deja");
+			return em.find(Hastag.class, label);
+		}
 	}
 
+	public void ajoutFormulaire(Formulaire f){
+		em.persist(f);
+	}
+
+	public void ajoutSondage(Sondage s){
+		em.persist(s);
+	}
+
+	public Collection<Formulaire> getlisteFormulaires() {
+		TypedQuery<Formulaire> lf = em.createQuery("select f from Formulaire as f",Formulaire.class);
+		return lf.getResultList();
+	}
+
+	public Formulaire trouverFormulaire(String id) {
+		return em.find(Formulaire.class, Integer.parseInt(id));
+	}
+	
+	public Hastag getHastag(String label){
+		return em.find(Hastag.class, label);
+	}
 	
 }
