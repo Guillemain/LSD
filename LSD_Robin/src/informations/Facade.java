@@ -1,5 +1,6 @@
 package informations;
 
+import java.time.YearMonth;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -21,8 +22,7 @@ public class Facade {
 	
 	@PersistenceContext
 	private EntityManager em;
-	
-	
+
 	public Hastag ajoutHastag(String label){
 		
 		Hastag h =  new Hastag(label);
@@ -30,7 +30,6 @@ public class Facade {
 		System.out.println("ajout de l'hastag a la bdd");
 		return h;	
 	}
-	
 
 	public void ajoutReponse(Reponse r){
 		em.persist(r);
@@ -75,26 +74,23 @@ public class Facade {
 
 	/** Connexion d'un utilisateur */
 	public boolean connecterUtilisateur(String id, String mdp) {
-		System.out.println("Analyse mdp");
 		Utilisateur user = em.find(Utilisateur.class,id);
 		if (user!=null && user.mdp.equals(mdp)) {
-			System.out.println("Authorized");
 			return true;
 		}
-		System.out.println("Denied");
 		return false;
 	}
 
-	public void ajoutProfil(String pseudo, String genre, int jour, int mois, int annee) throws Exception {
-		if (pseudo.equals("")) {
+	public void ajoutProfil(String nom, String prenom, String genre, int jour, int mois, int annee) throws Exception {
+		if (nom.equals("") || prenom.equals("")) {
 			throw new EmptyFieldException();
 		}
-		/*if (jour > YearMonth.of(annee,mois).lengthOfMonth()) {
+		if (jour > YearMonth.of(annee,mois).lengthOfMonth()) {
 			throw new Exception();
-		}*/
+		}
 		Calendar dateNaissance = Calendar.getInstance();
 	    dateNaissance.set(annee, mois, jour);
-		em.persist(new Profil(pseudo,genre,dateNaissance.getTime()));
+		em.persist(new Profil(nom,prenom,genre,dateNaissance.getTime()));
 	}
 
 	public Profil getProfil(int idProfil) {
@@ -126,23 +122,27 @@ public class Facade {
 		return score;
 	}
 
+	public void rendreAmis(int idProfil1,int idProfil2) {
+		Profil p1 = em.find(Profil.class, idProfil1);
+		Profil p2 = em.find(Profil.class, idProfil2);
+		if (p1 != null && p2 != null) {
+			p1.getAmis().add(p2);
+		}
+	}
 
 	public void update(Object o) {
 		
 		em.merge(o);
 	}
 
-
 	public void ajoutAnalyse(Analyse a) {
 		em.persist(a);
 		
 	}
-
 
 	public Collection<Formulaire> getFormulairesSortByDates() {
 		TypedQuery<Formulaire> lf = em.createQuery("select f from Formulaire as f order by f.date desc",Formulaire.class);
 		return lf.getResultList();
 	}
 
-	
 }

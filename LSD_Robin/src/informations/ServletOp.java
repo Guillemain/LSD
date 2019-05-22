@@ -43,67 +43,85 @@ public class ServletOp extends HttpServlet {
 		String op = request.getParameter("op");
 		String idUser;
 		String mdpUser;
+		int idProfil;
+		Profil profil;
 		HttpSession session; // La session de l'utilisateur.
 		switch(op){
-			
+
 			case "ajouterUtilisateur" :
-			idUser = request.getParameter("id");
-			mdpUser = request.getParameter("mdp");
-			try {
-				facade.ajoutUtilisateur(idUser, mdpUser);
-				request.getRequestDispatcher("connexion.jsp").forward(request, response);
-			} catch (EmptyFieldException e) {
-				request.setAttribute("error","emptyField");
-				request.getRequestDispatcher("ajoutUtilisateur.jsp").forward(request, response);
-			} catch (Exception e) {
-				request.setAttribute("error","doublon");
-				request.getRequestDispatcher("ajoutUtilisateur.jsp").forward(request, response);
-			}
-			break;
+				idUser = request.getParameter("id");
+				mdpUser = request.getParameter("mdp");
+				try {
+					facade.ajoutUtilisateur(idUser, mdpUser);
+					request.getRequestDispatcher("connexion.jsp").forward(request, response);
+				} catch (EmptyFieldException e) {
+					request.setAttribute("error","emptyField");
+					request.getRequestDispatcher("ajoutUtilisateur.jsp").forward(request, response);
+				} catch (Exception e) {
+					request.setAttribute("error","doublon");
+					request.getRequestDispatcher("ajoutUtilisateur.jsp").forward(request, response);
+				}
+				break;
 
 			case "connecterUtilisateur" :
-			idUser = request.getParameter("id");
-			mdpUser = request.getParameter("mdp");
-			System.out.println("Connexion");
-			if (facade.connecterUtilisateur(idUser,mdpUser)) {
-				System.out.println("Yes");
-				request.getRequestDispatcher("creerProfil.jsp").forward(request, response);
-			} else {
-				System.out.println("No");
-				request.setAttribute("loginError",true);
-				request.getRequestDispatcher("connexion.jsp").forward(request, response);
-			}
-			break;
+				idUser = request.getParameter("id");
+				mdpUser = request.getParameter("mdp");
+				if (facade.connecterUtilisateur(idUser,mdpUser)) {
+					request.getRequestDispatcher("ajoutProfil.jsp").forward(request, response);
+				} else {
+					request.setAttribute("loginError",true);
+					request.getRequestDispatcher("connexion.jsp").forward(request, response);
+				}
+				break;
 
 			case "ajouterProfil" :
-			String profilePseudo = request.getParameter("profilePseudo");
-			String profileGenre = request.getParameter("genre");
-			int birthDay = Integer.parseInt(request.getParameter("birthDay"));
-			int birthMonth = Integer.parseInt(request.getParameter("birthMonth"));
-			int birthYear = Integer.parseInt(request.getParameter("birthYear"));
-			try {
-				facade.ajoutProfil(profilePseudo,profileGenre,birthDay,birthMonth,birthYear);
-				request.getRequestDispatcher("index.html").forward(request, response);
-			} catch (EmptyFieldException e) {
-				request.setAttribute("error","emptyField");
-				request.getRequestDispatcher("ajoutProfil.jsp").forward(request, response);
-			} catch (Exception e) {
-				request.setAttribute("error","invalidDate");
-				request.getRequestDispatcher("ajoutProfil.jsp").forward(request, response);
-			}
-			break;
+				String profileFirstname = request.getParameter("profileFirstname");
+				String profileSurname = request.getParameter("profileSurname");
+				String profileGenre = request.getParameter("genre");
+				int birthDay = Integer.parseInt(request.getParameter("birthDay"));
+				int birthMonth = Integer.parseInt(request.getParameter("birthMonth"));
+				int birthYear = Integer.parseInt(request.getParameter("birthYear"));
+				try {
+					facade.ajoutProfil(profileSurname,profileFirstname,profileGenre,birthDay,birthMonth,birthYear);
+					request.getRequestDispatcher("index.html").forward(request, response);
+				} catch (EmptyFieldException e) {
+					request.setAttribute("error","emptyField");
+					request.getRequestDispatcher("ajoutProfil.jsp").forward(request, response);
+				} catch (Exception e) {
+					request.setAttribute("error","invalidDate");
+					request.getRequestDispatcher("ajoutProfil.jsp").forward(request, response);
+				}
+				break;
 
 			case "consulterProfil" :
-			int idProfil = Integer.parseInt(request.getParameter("idProfil"));
-			Profil profil = facade.getProfil(idProfil);
-			int age = facade.computeAge(profil.getDateNaissance());
-			int score = facade.computeScore(profil.getBadges());
-			request.setAttribute("profil", profil);
-			request.setAttribute("age", profil);
-			request.setAttribute("score", profil);
-			request.getRequestDispatcher("consulterProfil.jsp").forward(request, response);
-			break;
-		
+				String temp = request.getParameter("idProfil");
+				if (!temp.equals("")) {
+					idProfil = Integer.parseInt(temp);
+					profil = facade.getProfil(idProfil);
+					if (profil != null) {
+						int age = facade.computeAge(profil.getDateNaissance());
+						int score = facade.computeScore(profil.getBadges());
+						request.setAttribute("profil", profil);
+						request.setAttribute("age", age);
+						request.setAttribute("score", score);
+						request.getRequestDispatcher("consulterProfil.jsp").forward(request, response);
+					} else {
+						request.setAttribute("error","notFound");
+						request.getRequestDispatcher("rechercheProfil.jsp").forward(request, response);
+					}
+				} else {
+					request.setAttribute("error","notFound");
+					request.getRequestDispatcher("rechercheProfil.jsp").forward(request, response);
+				}
+				break;
+
+			case "ajouterAmi" :
+				idProfil = Integer.parseInt(request.getParameter("idProfil"));
+				int idAmi = Integer.parseInt(request.getParameter("idAmi"));
+				facade.rendreAmis(idProfil,idAmi);
+				request.getRequestDispatcher("rechercheProfil.jsp").forward(request,response);
+				break;
+
 			case "ajouterFormulaire" :
 				String nom = request.getParameter("nom");
 				String type = request.getParameter("type");
@@ -291,7 +309,8 @@ public class ServletOp extends HttpServlet {
 			case "retour" :
 				request.getRequestDispatcher("index.html").forward(request, response);
 				break;
-			default : 
+			default :
+				System.out.println("CASE NOT FOUUUUUUUUUUUUUUUUUUUUUUND");
 				break;
 			
 			}

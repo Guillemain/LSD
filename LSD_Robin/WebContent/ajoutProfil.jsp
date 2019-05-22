@@ -18,14 +18,15 @@
 
 	Merci d'avoir rejoint LSD ! Veuillez créer votre profil :<br>
 	<br>
-	Pseudo : <input type="text" name="profilePseudo"><br>
+	Prénom : <input type="text" name="profileFirstname"><br>
+	Nom : <input type="text" name="profileSurname"><br>
 	<br>
 	Genre :
 	<select name="genre">
 		<option value="homme">Homme</option>
 		<option value="femme">Femme</option>
 		<option value="autre">Autre</option>
-		<option value="none" selected>Non spécifié</option>
+		<option value="non specifie" selected>Non spécifié</option>
 	</select><br>
 	<br>
 	Date de naissance :

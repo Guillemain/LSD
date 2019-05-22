@@ -16,8 +16,8 @@ public class Profil {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	int id;
-
-	String pseudo;
+	String nom;
+	String prenom;
 	String genre;
 	Date dateNaissance;
 
@@ -28,12 +28,13 @@ public class Profil {
 	List<Badge> badges;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	List<Sondage> sondages;
+	List<Formulaire> formulaires;
 
 	public Profil() {}
 
-	public Profil(String pseudo, String genre, Date dateNaissance) {
-		this.pseudo = pseudo;
+	public Profil(String nom, String prenom, String genre, Date dateNaissance) {
+		this.nom = nom;
+		this.prenom = prenom;
 		this.genre = genre;
 		this.dateNaissance = dateNaissance;
 	}
@@ -46,12 +47,20 @@ public class Profil {
 		this.id = id;
 	}
 
-	public String getPseudo() {
-		return pseudo;
+	public String getNom() {
+		return nom;
 	}
 
-	public void setPseudo(String pseudo) {
-		this.pseudo = pseudo;
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	public String getPrenom() {
+		return prenom;
+	}
+
+	public void setPrenom(String prenom) {
+		this.prenom = prenom;
 	}
 
 	public String getGenre() {
@@ -86,12 +95,12 @@ public class Profil {
 		this.badges = badges;
 	}
 
-	public List<Sondage> getSondages() {
-		return sondages;
+	public List<Formulaire> getFormulaires() {
+		return formulaires;
 	}
 
-	public void setSondages(List<Sondage> sondages) {
-		this.sondages = sondages;
+	public void setFormulaires(List<Formulaire> formulaires) {
+		this.formulaires = formulaires;
 	}
 
 }
