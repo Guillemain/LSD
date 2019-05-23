@@ -3,22 +3,13 @@ package informations;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
 import javax.ejb.EJB;
-import javax.persistence.EntityExistsException;
-import javax.persistence.TypedQuery;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import LDAPContact.INPTAccount; // Classe qui nous permet de savoir si l'utilisateur détient bien un compte à l'INPT
-import sun.org.mozilla.javascript.internal.UintMap;
 
 /**
  * Servlet implementation class ServletOp
@@ -30,14 +21,14 @@ public class ServletOp extends HttpServlet {
 
 	@EJB
 	private Facade facade;
-	
+
     /**
      * Default constructor. 
      */
     public ServletOp() {
         // TODO Auto-generated constructor stub
     }
-    
+
     /** Méthode pour obtenir l'id de l'utilisateur et traiter le cas non connecté à l'aide d'une exception*/
     protected String getID(HttpSession session) throws UtilisateurInconnu{
 		if(session.getAttribute(LOGIN) == null){
@@ -50,7 +41,7 @@ public class ServletOp extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
 		String op = request.getParameter("op");
 		String idUser;
 		String mdpUser;
@@ -157,32 +148,26 @@ public class ServletOp extends HttpServlet {
 				String type = request.getParameter("type");
 				//System.out.println("ajout formulaire");
 				Formulaire f;
-				
 				if (type.equals("privee")){
-					System.out.println("privee");
+					//System.out.println("privee");
 					f = new Formulaire(nom,false);
 					facade.ajoutFormulaire(f);
-				}
-				else {
-					System.out.println("public");
+				} else {
+					//System.out.println("public");
 					f = new Formulaire(nom,true);
 					facade.ajoutFormulaire(f);
 				}
-				
 				int idf = f.getId();
 				request.setAttribute("idf",String.valueOf(idf));
 				request.setAttribute("Formulaire", f);
 				request.getRequestDispatcher("ajoutSondages.jsp").forward(request, response);
-			
 				break;
-				
+
 			case "majFormulaire":
 				//System.out.println("majFormulaire");
 				String idf3 = request.getParameter("idf");
-				
 				Formulaire f2 = facade.trouverFormulaire(idf3);
 				//System.out.println("formulaire dans servlet :"+f2);
-				
 				String question = request.getParameter("question");
 				String p1 = request.getParameter("p");
 				String p2 = request.getParameter("pp");
@@ -198,7 +183,6 @@ public class ServletOp extends HttpServlet {
 				if (!p3.equals("")){
 					s.addListePropositions(p3);
 				}
-				
 				Analyse a = new AnalyseChoix();
 				facade.ajoutAnalyse(a);
 				facade.ajoutSondage(s);
@@ -206,33 +190,30 @@ public class ServletOp extends HttpServlet {
 				f2.addListeSondages(s);
 				facade.update(f2);
 				//System.out.println("nb sondages apres : "+ f2.getListeSondages().size());
-				
 				request.setAttribute("Formulaire",f2);
 				request.setAttribute("idf", idf3);
 				request.getRequestDispatcher("ajoutSondages.jsp").forward(request, response);
 				break;
-				
-			
+
 			case "consultation" :
 				Collection<Formulaire> lf = facade.getlisteFormulaires();
 				//System.out.println(lf.size());
 				request.setAttribute("listeFormulaires",lf);
 				request.getRequestDispatcher("consultation.jsp").forward(request, response);
 				break;
-				
-				
+
 			case "ajoutSondage" :
 				String idf2 = request.getParameter("idf");
 				request.setAttribute("idf",idf2);
 				request.getRequestDispatcher("nouveauSondage.jsp").forward(request, response);
 				break;
-				
+
 			case "ajoutHastags" :
 				String idf4 = request.getParameter("idf");
 				request.setAttribute("idf",idf4);
 				request.getRequestDispatcher("ajoutHastag.jsp").forward(request, response);
 				break;
-				
+
 			case "ajoutReponse" :
 				//System.out.println("Ajout de la reponse");
 				String idf6 = request.getParameter("idf");
@@ -240,7 +221,7 @@ public class ServletOp extends HttpServlet {
 				Collection<Sondage> ls2 = f10.getListeSondages();
 				int nb_s = 0;
 				for (Sondage s2 : ls2){
-					
+
 					String rep = request.getParameter(String.valueOf(nb_s));
 					Reponse r = new Reponse();
 					r.setSondage(s2);
@@ -252,33 +233,25 @@ public class ServletOp extends HttpServlet {
 					nb_s =1;
 				}
 				request.getRequestDispatcher("index.html").forward(request, response);
-				
+
 			case "dernierSondages" :
-				
 				Collection<Formulaire> lf2dcxc = facade.getFormulairesSortByDates();
 				request.setAttribute("listeFormulaires",lf2dcxc);
 				request.getRequestDispatcher("reponseFormulaire.jsp").forward(request, response);
-				
-				
 				break;
-				
+
 			case "finFormulaire" :
 				String ha = request.getParameter("h1");
 				String[] hashtags = ha.split(" ");
-				
 				String idf5 = request.getParameter("idf");
-				
 				Formulaire f3 = facade.trouverFormulaire(idf5);
 				ArrayList<String> labelh = new ArrayList<String>();
-				
 				for (String h1 : hashtags){
 					if (!h1.equals("")){
-						
 						Hastag ha1 = null;
 						try{
 							ha1 = facade.ajoutHastag(h1);
-						}
-						catch (Exception e){
+						} catch (Exception e){
 							ha1 = facade.getHastag(h1);
 							//System.out.println("recherche de l'hastag");
 						}
@@ -291,58 +264,53 @@ public class ServletOp extends HttpServlet {
 						//System.out.println("ajout hashtag 1");
 					}
 				}
-					
 				facade.update(f3);
 				request.getRequestDispatcher("index.html").forward(request, response);
 				break;
-				
+
 			case "accueil" :
 				request.getRequestDispatcher("index.html").forward(request, response);
 				break;
-			
+
 			case "reponseFormulaire" :
 				Collection<Formulaire> lf2 = facade.getlisteFormulaires();
 				request.setAttribute("listeFormulaires",lf2);
 				request.getRequestDispatcher("reponseFormulaire.jsp").forward(request, response);
 				break;
-				
+
 			case "accesFormulaire" :
 				int id = Integer.parseInt(request.getParameter("form"));
 				//System.out.println(id);
 				Formulaire f6 = facade.trouverFormulaire(String.valueOf(id));
-				System.out.println("nombre sondages : "+f6.getListeSondages().size());
-				System.out.println("envoi du formulaire pour la reponse");
+				//System.out.println("nombre sondages : "+f6.getListeSondages().size());
+				//System.out.println("envoi du formulaire pour la reponse");
 				request.setAttribute("Formulaire",f6);
 				request.getRequestDispatcher("choixDeReponse.jsp").forward(request, response);
 				break;
-			
+
 			case "recherche" :
 				request.setAttribute("echec",false);
 				request.getRequestDispatcher("recherche.jsp").forward(request, response);
 				break;
-				
+
 			case "resultatRecherche" :
 				String label = request.getParameter("label");
 				Hastag h = facade.getHastag(label);
 				if (h == null){
 					request.setAttribute("echec",true);
 					request.getRequestDispatcher("recherche.jsp").forward(request, response);
-				}
-				else{
+				} else{
 					request.setAttribute("hastag", h);
 					request.getRequestDispatcher("resultatRecherche.jsp").forward(request, response);
-					
 				}
 				break;
-				
-				
+
 			case "retour" :
 				request.getRequestDispatcher("index.html").forward(request, response);
 				break;
+
 			default :
-				System.out.println("CASE NOT FOUUUUUUUUUUUUUUUUUUUUUUND");
 				break;
-			
 			}
 	}
 

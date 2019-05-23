@@ -2,13 +2,13 @@ package informations;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import LDAPContact.*; // notre package de Connexion au LDAP
+
 /**
  * Session Bean implementation class Facade
  */
@@ -18,12 +18,11 @@ public class Facade {
 
 	//private Collection<Formulaire> listeFormulaires = new Vector<Formulaire>();
 	//private HashMap<String,Hastag> listeHastags = new HashMap<String,Hastag>();
-	
+
 	@PersistenceContext
 	private EntityManager em;
 
 	public Hastag ajoutHastag(String label){
-		
 		Hastag h =  new Hastag(label);
 		em.persist(h);
 		System.out.println("ajout de l'hastag a la bdd");
@@ -33,44 +32,42 @@ public class Facade {
 	public void ajoutReponse(Reponse r){
 		em.persist(r);
 	}
-	
+
 	public void ajoutFormulaire(Formulaire f){
 		em.persist(f);
-		//System.out.println(f);
 	}
-	
+
 	public void ajoutSondage(Sondage s){
 		em.persist(s);
 	}
-	
+
 	public Collection<Formulaire> getlisteFormulaires() {
 		TypedQuery<Formulaire> lf = em.createQuery("select f from Formulaire as f",Formulaire.class);
 		return lf.getResultList();
-	
 	}
 
 	public Formulaire trouverFormulaire(String id) {
 		return em.find(Formulaire.class, Integer.parseInt(id));
 	}
-	
+
 	public Hastag getHastag(String label){
 		try{
 			return em.find(Hastag.class, label);
-		}catch (Exception e){
+		} catch (Exception e){
 			System.out.println("ce hashtag n'exite pas (get)");
 			return null;
 		}
 	}
-	
+
 	//// GREGOIRE ////
 	/** Gregoire nouvelle version */
 	public void ajoutUtilisateur(String id, String mdp) throws Exception {
 		if (id.equals("") || mdp.equals("")) {
 			throw new EmptyFieldException();
 		}
-		if(INPTAccount.detientUnCompte(id, mdp)){
+		if (INPTAccount.detientUnCompte(id, mdp)) {
 			em.persist(new Utilisateur(id,mdp));
-		}else{
+		} else {
 			throw new NonMembreINPT();
 		}
 	}

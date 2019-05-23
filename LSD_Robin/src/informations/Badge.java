@@ -23,7 +23,6 @@ public class Badge {
 
 	public Badge(String nom, String description, int valeur) {
 		this.nom = nom;
-		this.description = description;
 		this.valeur = valeur;
 	}
 
