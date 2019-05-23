@@ -17,7 +17,7 @@
 	%>
 
 	Identifiant : <input type="text" name="id"><br>
-	Mot de passe : <input type="text" name="mdp"><br>
+	Mot de passe : <input type="password" name="mdp"><br>
 
 	<input type="submit" value="OK">
 
