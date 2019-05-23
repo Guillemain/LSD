@@ -8,10 +8,8 @@ import java.util.Scanner;
 /**
  * Classe permettant la gestion des identifiant des comptes de l'inpt
  * 
- * @author guillemain
- *
  */
-	class ConnexionLDAP {
+	public class INPTAccount {
 		static String url = "ldap://ldap.enseeiht.fr:389";
 		static String securite = "simple"; // Pas bon ça.
 	/**	

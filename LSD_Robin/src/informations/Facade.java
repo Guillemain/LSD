@@ -1,6 +1,6 @@
 package informations;
 
-import java.time.YearMonth;
+//import java.time.YearMonth;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -10,6 +10,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import LDAPContact.*; // notre package de Connexion au LDAP
 /**
  * Session Bean implementation class Facade
  */
@@ -69,7 +70,12 @@ public class Facade {
 		if (id.equals("") || mdp.equals("")) {
 			throw new EmptyFieldException();
 		}
-		em.persist(new Utilisateur(id,mdp));
+		if(INPTAccount.detientUnCompte(id, mdp)){
+			em.persist(new Utilisateur(id,mdp));
+		}else{
+			throw new NonMembreINPT();
+		}
+		
 	}
 
 	/** Connexion d'un utilisateur */
@@ -85,9 +91,9 @@ public class Facade {
 		if (nom.equals("") || prenom.equals("")) {
 			throw new EmptyFieldException();
 		}
-		if (jour > YearMonth.of(annee,mois).lengthOfMonth()) {
+		/*if (jour > YearMonth.of(annee,mois).lengthOfMonth()) {
 			throw new Exception();
-		}
+		}*/
 		Calendar dateNaissance = Calendar.getInstance();
 	    dateNaissance.set(annee, mois, jour);
 		em.persist(new Profil(nom,prenom,genre,dateNaissance.getTime()));

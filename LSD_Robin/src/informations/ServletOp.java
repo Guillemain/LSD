@@ -17,13 +17,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
+import LDAPContact.INPTAccount; // Classe qui nous permet de savoir si l'utilisateur détient bien un compte à l'INPT
+import sun.org.mozilla.javascript.internal.UintMap;
 /**
  * Servlet implementation class ServletOp
  */
 @WebServlet("/ServletOp")
 public class ServletOp extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	public static final String LOGIN = "LOGIN";
 
 	@EJB
 	private Facade facade;
@@ -34,6 +36,14 @@ public class ServletOp extends HttpServlet {
     public ServletOp() {
         // TODO Auto-generated constructor stub
     }
+    
+    /** Méthode pour obtenir l'id de l'utilisateur et traiter le cas non connecté à l'aide d'une exception*/
+    protected String getID(HttpSession session) throws UtilisateurInconnu{
+		if(session.getAttribute(LOGIN) == null){
+			throw new UtilisateurInconnu();
+		}
+		return (String) session.getAttribute(LOGIN);
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -56,8 +66,12 @@ public class ServletOp extends HttpServlet {
 					request.getRequestDispatcher("connexion.jsp").forward(request, response);
 				} catch (EmptyFieldException e) {
 					request.setAttribute("error","emptyField");
+					request.getRequestDispatcher("ajoutUtilisateur.jsp").forward(request, response);	
+				} catch (NonMembreINPT e) {
+					request.setAttribute("error","Il faut être m'embre de l'INPT pour profiter de ce service");
 					request.getRequestDispatcher("ajoutUtilisateur.jsp").forward(request, response);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					request.setAttribute("error","doublon");
 					request.getRequestDispatcher("ajoutUtilisateur.jsp").forward(request, response);
 				}
@@ -68,6 +82,8 @@ public class ServletOp extends HttpServlet {
 				mdpUser = request.getParameter("mdp");
 				if (facade.connecterUtilisateur(idUser,mdpUser)) {
 					request.getRequestDispatcher("ajoutProfil.jsp").forward(request, response);
+					session = request.getSession();
+					session.setAttribute(LOGIN, request.getParameter("id"));
 				} else {
 					request.setAttribute("loginError",true);
 					request.getRequestDispatcher("connexion.jsp").forward(request, response);
@@ -323,5 +339,7 @@ public class ServletOp extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
+	
+	
 
 }
