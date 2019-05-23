@@ -1,9 +1,7 @@
 package informations;
 
-//import java.time.YearMonth;
-import java.util.Calendar;
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -75,7 +73,6 @@ public class Facade {
 		}else{
 			throw new NonMembreINPT();
 		}
-		
 	}
 
 	/** Connexion d'un utilisateur */
@@ -91,12 +88,28 @@ public class Facade {
 		if (nom.equals("") || prenom.equals("")) {
 			throw new EmptyFieldException();
 		}
-		/*if (jour > YearMonth.of(annee,mois).lengthOfMonth()) {
+		if (!validDate(jour,mois,annee)) {
 			throw new Exception();
-		}*/
-		Calendar dateNaissance = Calendar.getInstance();
-	    dateNaissance.set(annee, mois, jour);
-		em.persist(new Profil(nom,prenom,genre,dateNaissance.getTime()));
+		}
+		em.persist(new Profil(nom,prenom,genre,jour,mois,annee));
+	}
+
+	public boolean validDate(int jour, int mois, int annee) {
+		if ((mois == 2) && ((jour>29) || (!estBisextile(annee) && jour>28))){
+			return false;
+		}
+		if (jour==31 && ((mois<=7 && mois%2==0) || (mois>=8 && mois%2==1))) {
+			return false;
+		}
+		return true;
+	}
+
+	public boolean estBisextile(int annee) {
+		if (annee%400==0 || (annee%4==0 && annee%100!=0)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public Profil getProfil(int idProfil) {
@@ -104,17 +117,11 @@ public class Facade {
 	}
 
 	/**  */
-	@SuppressWarnings("deprecation")
-	public int computeAge(Date birthDate) {
-		Date currentDate = new Date();
-		int age = birthDate.getYear() - currentDate.getYear();
-		if (birthDate.getMonth()>currentDate.getMonth()) {
+	public int computeAge(int jourNaissance, int moisNaissance, int anneeNaissance) {
+		LocalDateTime currentDate = LocalDateTime.now();
+		int age = currentDate.getYear() - anneeNaissance;
+		if ((currentDate.getMonth().getValue()-moisNaissance<0) || ((currentDate.getMonth().getValue()==moisNaissance) && (currentDate.getDayOfMonth()-jourNaissance<0))){
 			age--;
-		} else if (birthDate.getMonth()==currentDate.getMonth() && birthDate.getDay()>currentDate.getDay()) {
-			age--;
-		}
-		if (age<0) {
-			age = 0;
 		}
 		return age;
 	}
@@ -128,22 +135,22 @@ public class Facade {
 		return score;
 	}
 
-	public void rendreAmis(int idProfil1,int idProfil2) {
+	public void rendreAmis(int idProfil1,int idProfil2) throws Exception {
 		Profil p1 = em.find(Profil.class, idProfil1);
 		Profil p2 = em.find(Profil.class, idProfil2);
 		if (p1 != null && p2 != null) {
 			p1.getAmis().add(p2);
+		} else {
+			throw new Exception();
 		}
 	}
 
 	public void update(Object o) {
-		
 		em.merge(o);
 	}
 
 	public void ajoutAnalyse(Analyse a) {
 		em.persist(a);
-		
 	}
 
 	public Collection<Formulaire> getFormulairesSortByDates() {

@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import LDAPContact.INPTAccount; // Classe qui nous permet de savoir si l'utilisateur détient bien un compte à l'INPT
 import sun.org.mozilla.javascript.internal.UintMap;
+
 /**
  * Servlet implementation class ServletOp
  */
@@ -70,8 +71,7 @@ public class ServletOp extends HttpServlet {
 				} catch (NonMembreINPT e) {
 					request.setAttribute("error","Il faut être m'embre de l'INPT pour profiter de ce service");
 					request.getRequestDispatcher("ajoutUtilisateur.jsp").forward(request, response);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					request.setAttribute("error","doublon");
 					request.getRequestDispatcher("ajoutUtilisateur.jsp").forward(request, response);
 				}
@@ -115,7 +115,7 @@ public class ServletOp extends HttpServlet {
 					idProfil = Integer.parseInt(temp);
 					profil = facade.getProfil(idProfil);
 					if (profil != null) {
-						int age = facade.computeAge(profil.getDateNaissance());
+						int age = facade.computeAge(profil.getJourNaissance(),profil.getMoisNaissance(),profil.getAnneeNaissance());
 						int score = facade.computeScore(profil.getBadges());
 						request.setAttribute("profil", profil);
 						request.setAttribute("age", age);
@@ -133,9 +133,23 @@ public class ServletOp extends HttpServlet {
 
 			case "ajouterAmi" :
 				idProfil = Integer.parseInt(request.getParameter("idProfil"));
-				int idAmi = Integer.parseInt(request.getParameter("idAmi"));
-				facade.rendreAmis(idProfil,idAmi);
-				request.getRequestDispatcher("rechercheProfil.jsp").forward(request,response);
+				String idAmi = request.getParameter("idAmi");
+				if (!idAmi.equals("")) {
+					try {
+						facade.rendreAmis(idProfil,Integer.parseInt(idAmi));
+					} catch (Exception e) {
+						request.setAttribute("error","friendNotFound");
+					}
+				} else {
+					request.setAttribute("error","friendNotFound");
+				}
+				profil = facade.getProfil(idProfil);
+				int age = facade.computeAge(profil.getJourNaissance(),profil.getMoisNaissance(),profil.getAnneeNaissance());
+				int score = facade.computeScore(profil.getBadges());
+				request.setAttribute("profil", profil);
+				request.setAttribute("age", age);
+				request.setAttribute("score", score);
+				request.getRequestDispatcher("consulterProfil.jsp").forward(request, response);
 				break;
 
 			case "ajouterFormulaire" :
@@ -339,7 +353,5 @@ public class ServletOp extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-	
-	
 
 }

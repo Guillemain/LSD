@@ -1,8 +1,6 @@
 package informations;
 
-import java.util.Date;
 import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,7 +17,9 @@ public class Profil {
 	String nom;
 	String prenom;
 	String genre;
-	Date dateNaissance;
+	int jourNaissance;
+	int moisNaissance;
+	int anneeNaissance;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	List<Profil> amis;
@@ -32,11 +32,13 @@ public class Profil {
 
 	public Profil() {}
 
-	public Profil(String nom, String prenom, String genre, Date dateNaissance) {
+	public Profil(String nom, String prenom, String genre, int jourNaissance, int moisNaissance, int anneeNaissance) {
 		this.nom = nom;
 		this.prenom = prenom;
 		this.genre = genre;
-		this.dateNaissance = dateNaissance;
+		this.jourNaissance = jourNaissance;
+		this.moisNaissance = moisNaissance;
+		this.anneeNaissance = anneeNaissance;
 	}
 
 	public int getId() {
@@ -71,12 +73,28 @@ public class Profil {
 		this.genre = genre;
 	}
 
-	public Date getDateNaissance() {
-		return dateNaissance;
+	public int getJourNaissance() {
+		return jourNaissance;
 	}
 
-	public void setDateNaissance(Date dateNaissance) {
-		this.dateNaissance = dateNaissance;
+	public void setJourNaissance(int jourNaissance) {
+		this.jourNaissance = jourNaissance;
+	}
+
+	public int getMoisNaissance() {
+		return moisNaissance;
+	}
+
+	public void setMoisNaissance(int moisNaissance) {
+		this.moisNaissance = moisNaissance;
+	}
+
+	public int getAnneeNaissance() {
+		return anneeNaissance;
+	}
+
+	public void setAnneeNaissance(int anneeNaissance) {
+		this.anneeNaissance = anneeNaissance;
 	}
 
 	public List<Profil> getAmis() {

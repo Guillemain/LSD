@@ -10,6 +10,13 @@
 <body>
 <form method="get" action="ServletOp">
 
+	<%
+	String error = (String) request.getAttribute("error");
+	if (error==null) {
+		error = "";
+	}
+	%>
+
 	<% Profil profil = (Profil) request.getAttribute("profil"); %>
 	<% int age = (int) request.getAttribute("age"); %>
 	<% int score = (int) request.getAttribute("score"); %>
@@ -17,17 +24,20 @@
 	<h4>==== Informations générales ====</h4>
 	<%=profil.getPrenom()%> <%=profil.getNom()%> (id <%=profil.getId()%>)<br>
 	Genre : <%=profil.getGenre()%><br>
-	Age : <%=age%> (Date de naissance : <%=profil.getDateNaissance().toString()%>)<br>
+	Age : <%=age%> (Date de naissance : <%=profil.getJourNaissance()%>/<%=profil.getMoisNaissance()%>/<%=profil.getAnneeNaissance()%>)<br>
 	<br>
 
 	<h4>==== Liste des amis ====</h4>
 	<% for (Profil amis : profil.getAmis()) { %>
-		<a href="/LSD/ServletOp?consulterProfil&idProfil=<%=amis.getId()%>"> <%=amis.getPrenom()%> <%=amis.getNom()%> (id <%=amis.getId()%>) </a><br>
+		<a href="/LSD/ServletOp?op=consulterProfil&idProfil=<%=amis.getId()%>"> <%=amis.getPrenom()%> <%=amis.getNom()%> (id <%=amis.getId()%>) </a><br>
 	<%}%>
 	<br>
 
-	Ajouter un Ami : <input type="text" name="idAmi"> <input type="submit" value="ajouterAmi"><br>
-	<br>
+	Ajouter un Ami : <input type="text" name="idAmi"> <input type="submit" value="ajouterAmi">
+	<% if (error.equals("friendNotFound")) { %>
+		Aucun ami trouvé pour cet id !
+	<% } %>
+	<br><br>
 
 	<h4>==== Liste des badges obtenus ====</h4>
 	<% for (Badge badge : profil.getBadges()) { %>
