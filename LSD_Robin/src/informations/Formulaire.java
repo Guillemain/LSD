@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import java.util.Calendar;
@@ -46,7 +47,8 @@ public class Formulaire {
 
 	private boolean privee;
 	//private Collection<Progil> Visiteurs;
-	//private Comptes Createur;
+	@ManyToOne(fetch = FetchType.EAGER)
+	private Profil Createur;
 	
 	
 	public Formulaire(String nom, boolean type) {
@@ -61,7 +63,15 @@ public class Formulaire {
 		//ListeSondages = new Vector<Sondage>();
 		//ListeHastags = new Vector<Hastag>();
 	}
-	
+
+	public Profil getCreateur() {
+		return Createur;
+	}
+
+	public void setCreateur(Profil createur) {
+		Createur = createur;
+	}
+
 	public String getNom() {
 		return Nom;
 	}

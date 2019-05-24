@@ -9,24 +9,16 @@
 <body>
 <form method="get" action="ServletOp">
 
-	<%
-	String error = (String) request.getAttribute("error");
-	if (error==null) {
-		error = "";
-	}
-	%>
-
 	Identifiant : <input type="text" name="id"><br>
 	Mot de passe : <input type="password" name="mdp"><br>
 
 	<input type="submit" value="OK">
 
-	<% if (error.equals("doublon")) { %>
+	<%
+	String error = (String) request.getAttribute("error");
+	if (error!=null) { %>
 		<br><br>
-		Cet identifiant est déjà pris !
-	<% } else if (error.equals("emptyField")) { %>
-		<br><br>
-		Un des champs est resté vide !
+		<%=error%>
 	<% } %>
 
 	<input type="hidden" name="op" value="ajouterUtilisateur">

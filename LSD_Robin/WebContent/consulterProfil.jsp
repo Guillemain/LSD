@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="informations.Profil,informations.Badge,informations.Formulaire,java.util.Collection" %>
+<%@ page import="informations.Profil,informations.Formulaire,java.util.Collection" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -19,7 +19,7 @@
 
 	<% Profil profil = (Profil) request.getAttribute("profil"); %>
 	<% int age = (int) request.getAttribute("age"); %>
-	<% int score = (int) request.getAttribute("score"); %>
+	<% boolean loggedUser = (boolean) request.getAttribute("loggedUser"); %>
 
 	<h4>==== Informations générales ====</h4>
 	<%=profil.getPrenom()%> <%=profil.getNom()%> (id <%=profil.getId()%>)<br>
@@ -33,21 +33,13 @@
 	<%}%>
 	<br>
 
-	Ajouter un Ami : <input type="text" name="idAmi"> <input type="submit" value="ajouterAmi">
-	<% if (error.equals("friendNotFound")) { %>
-		Aucun ami trouvé pour cet id !
+	<% if (loggedUser) { %>
+		Ajouter un Ami : <input type="text" name="idAmi"> <input type="submit" value="ajouterAmi">
+		<% if (error.equals("friendNotFound")) { %>
+			Aucun ami trouvé pour cet id !
+		<% } %>
+		<br><br>
 	<% } %>
-	<br><br>
-
-	<h4>==== Liste des badges obtenus ====</h4>
-	<% for (Badge badge : profil.getBadges()) { %>
-		<%=badge.getNom()%> : <%=badge.getDescription()%> (<%=badge.getValeur()%> points)<br>
-	<%}%>
-	Score Total : <%=score%> points 
-	<br>
-
-	<a href="listerBadge.html"> Voir tous les badges </a><br>
-	<br>
 
 	<h4>==== Liste des formulaires postés ====</h4>
 	<% for (Formulaire formulaire : profil.getFormulaires()) { %>

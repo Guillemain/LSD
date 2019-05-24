@@ -45,7 +45,7 @@
 			<option value=<%=i%>><%=i%></option>
 		<% } %>
 		</select><br>
-		
+
 		<input type="submit" value="OK">
 
 	<% if (error.equals("invalidDate")) { %>

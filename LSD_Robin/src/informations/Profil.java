@@ -1,12 +1,17 @@
 package informations;
 
-import java.util.List;
+
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Profil {
@@ -14,6 +19,7 @@ public class Profil {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	int id;
+
 	String nom;
 	String prenom;
 	String genre;
@@ -22,13 +28,13 @@ public class Profil {
 	int anneeNaissance;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	List<Profil> amis;
+	Set<Profil> amis;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	List<Badge> badges;
+	@OneToMany(fetch = FetchType.EAGER)
+	Set<Formulaire> formulaires;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	List<Formulaire> formulaires;
+	@OneToOne
+	Utilisateur utilisateur;
 
 	public Profil() {}
 
@@ -97,28 +103,28 @@ public class Profil {
 		this.anneeNaissance = anneeNaissance;
 	}
 
-	public List<Profil> getAmis() {
+	public Set<Profil> getAmis() {
 		return amis;
 	}
 
-	public void setAmis(List<Profil> amis) {
+	public void setAmis(Set<Profil> amis) {
 		this.amis = amis;
 	}
 
-	public List<Badge> getBadges() {
-		return badges;
-	}
-
-	public void setBadges(List<Badge> badges) {
-		this.badges = badges;
-	}
-
-	public List<Formulaire> getFormulaires() {
+	public Set<Formulaire> getFormulaires() {
 		return formulaires;
 	}
 
-	public void setFormulaires(List<Formulaire> formulaires) {
+	public void setFormulaires(Set<Formulaire> formulaires) {
 		this.formulaires = formulaires;
+	}
+
+	public Utilisateur getUtilisateur() {
+		return utilisateur;
+	}
+
+	public void setUtilisateur(Utilisateur utilisateur) {
+		this.utilisateur = utilisateur;
 	}
 
 }

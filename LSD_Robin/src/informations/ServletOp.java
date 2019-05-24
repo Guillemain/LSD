@@ -57,13 +57,13 @@ public class ServletOp extends HttpServlet {
 					facade.ajoutUtilisateur(idUser, mdpUser);
 					request.getRequestDispatcher("connexion.jsp").forward(request, response);
 				} catch (EmptyFieldException e) {
-					request.setAttribute("error","emptyField");
+					request.setAttribute("error","Un des champs est resté vide !");
 					request.getRequestDispatcher("ajoutUtilisateur.jsp").forward(request, response);	
 				} catch (NonMembreINPT e) {
-					request.setAttribute("error","Il faut être m'embre de l'INPT pour profiter de ce service");
+					request.setAttribute("error","Il faut être m'embre de l'INPT pour profiter de ce service !");
 					request.getRequestDispatcher("ajoutUtilisateur.jsp").forward(request, response);
 				} catch (Exception e) {
-					request.setAttribute("error","doublon");
+					request.setAttribute("error","Cet identifiant est déjà utilisé !");
 					request.getRequestDispatcher("ajoutUtilisateur.jsp").forward(request, response);
 				}
 				break;
@@ -72,9 +72,14 @@ public class ServletOp extends HttpServlet {
 				idUser = request.getParameter("id");
 				mdpUser = request.getParameter("mdp");
 				if (facade.connecterUtilisateur(idUser,mdpUser)) {
-					request.getRequestDispatcher("ajoutProfil.jsp").forward(request, response);
 					session = request.getSession();
 					session.setAttribute(LOGIN, request.getParameter("id"));
+					idProfil = facade.getIdProfil(idUser);
+					if (idProfil>0) {
+						request.getRequestDispatcher("index.html").forward(request, response);
+					} else {
+						request.getRequestDispatcher("ajoutProfil.jsp").forward(request, response);
+					}
 				} else {
 					request.setAttribute("loginError",true);
 					request.getRequestDispatcher("connexion.jsp").forward(request, response);
@@ -82,6 +87,12 @@ public class ServletOp extends HttpServlet {
 				break;
 
 			case "ajouterProfil" :
+				session = request.getSession(true);
+				try {
+					idUser = getID(session);
+				} catch (Exception e) {
+					idUser = "";
+				}
 				String profileFirstname = request.getParameter("profileFirstname");
 				String profileSurname = request.getParameter("profileSurname");
 				String profileGenre = request.getParameter("genre");
@@ -89,7 +100,8 @@ public class ServletOp extends HttpServlet {
 				int birthMonth = Integer.parseInt(request.getParameter("birthMonth"));
 				int birthYear = Integer.parseInt(request.getParameter("birthYear"));
 				try {
-					facade.ajoutProfil(profileSurname,profileFirstname,profileGenre,birthDay,birthMonth,birthYear);
+					Profil newProfil = facade.ajoutProfil(profileSurname,profileFirstname,profileGenre,birthDay,birthMonth,birthYear);
+					facade.lierUtilisateurProfil(idUser,newProfil.getId());
 					request.getRequestDispatcher("index.html").forward(request, response);
 				} catch (EmptyFieldException e) {
 					request.setAttribute("error","emptyField");
@@ -106,11 +118,17 @@ public class ServletOp extends HttpServlet {
 					idProfil = Integer.parseInt(temp);
 					profil = facade.getProfil(idProfil);
 					if (profil != null) {
+						session = request.getSession();
+						try {
+							idUser = getID(session);
+						} catch (Exception e) {
+							idUser = "";
+						}
+						Boolean loggedUser = profil.getUtilisateur().getId().equals(idUser);
 						int age = facade.computeAge(profil.getJourNaissance(),profil.getMoisNaissance(),profil.getAnneeNaissance());
-						int score = facade.computeScore(profil.getBadges());
 						request.setAttribute("profil", profil);
 						request.setAttribute("age", age);
-						request.setAttribute("score", score);
+						request.setAttribute("loggedUser",loggedUser);
 						request.getRequestDispatcher("consulterProfil.jsp").forward(request, response);
 					} else {
 						request.setAttribute("error","notFound");
@@ -135,29 +153,39 @@ public class ServletOp extends HttpServlet {
 					request.setAttribute("error","friendNotFound");
 				}
 				profil = facade.getProfil(idProfil);
+				session = request.getSession();
+				try {
+					idUser = getID(session);
+				} catch (Exception e) {
+					idUser = "";
+				}
+				Boolean loggedUser = profil.getUtilisateur().getId().equals(idUser);
 				int age = facade.computeAge(profil.getJourNaissance(),profil.getMoisNaissance(),profil.getAnneeNaissance());
-				int score = facade.computeScore(profil.getBadges());
 				request.setAttribute("profil", profil);
 				request.setAttribute("age", age);
-				request.setAttribute("score", score);
+				request.setAttribute("loggedUser",loggedUser);
 				request.getRequestDispatcher("consulterProfil.jsp").forward(request, response);
 				break;
 
 			case "ajouterFormulaire" :
+				session = request.getSession();
+				try {
+					idUser = getID(session);
+				} catch (Exception e) {
+					idUser = "";
+				}
 				String nom = request.getParameter("nom");
 				String type = request.getParameter("type");
-				//System.out.println("ajout formulaire");
 				Formulaire f;
 				if (type.equals("privee")){
-					//System.out.println("privee");
 					f = new Formulaire(nom,false);
 					facade.ajoutFormulaire(f);
 				} else {
-					//System.out.println("public");
 					f = new Formulaire(nom,true);
 					facade.ajoutFormulaire(f);
 				}
 				int idf = f.getId();
+				facade.lierFormulaire(idUser,idf);
 				request.setAttribute("idf",String.valueOf(idf));
 				request.setAttribute("Formulaire", f);
 				request.getRequestDispatcher("ajoutSondages.jsp").forward(request, response);

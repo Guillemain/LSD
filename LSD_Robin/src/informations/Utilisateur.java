@@ -1,8 +1,8 @@
 package informations;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -10,10 +10,9 @@ public class Utilisateur {
 
 	@Id
 	String id;
-
 	String mdp;
 
-	@OneToOne(fetch = FetchType.EAGER)
+	@OneToOne
 	Profil profil;
 
 	public Utilisateur() {}
@@ -45,6 +44,6 @@ public class Utilisateur {
 
 	public void setProfil(Profil profil) {
 		this.profil = profil;
-	}	
+	}
 
 }

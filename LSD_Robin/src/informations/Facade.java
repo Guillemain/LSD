@@ -37,6 +37,13 @@ public class Facade {
 		em.persist(f);
 	}
 
+	public void lierFormulaire(String idUser, int idFormulaire) {
+		Utilisateur user = em.find(Utilisateur.class,idUser);
+		Formulaire form = em.find(Formulaire.class, idFormulaire);
+		user.getProfil().getFormulaires().add(form);
+		form.setCreateur(user.getProfil());
+	}
+
 	public void ajoutSondage(Sondage s){
 		em.persist(s);
 	}
@@ -60,19 +67,19 @@ public class Facade {
 	}
 
 	//// GREGOIRE ////
-	/** Gregoire nouvelle version */
+
 	public void ajoutUtilisateur(String id, String mdp) throws Exception {
 		if (id.equals("") || mdp.equals("")) {
 			throw new EmptyFieldException();
 		}
-		if (INPTAccount.detientUnCompte(id, mdp)) {
+		
+//		if (INPTAccount.detientUnCompte(id,mdp)) {
 			em.persist(new Utilisateur(id,mdp));
-		} else {
-			throw new NonMembreINPT();
-		}
+//		} else {
+//			throw new NonMembreINPT();
+//		}
 	}
 
-	/** Connexion d'un utilisateur */
 	public boolean connecterUtilisateur(String id, String mdp) {
 		Utilisateur user = em.find(Utilisateur.class,id);
 		if (user!=null && user.mdp.equals(mdp)) {
@@ -81,14 +88,24 @@ public class Facade {
 		return false;
 	}
 
-	public void ajoutProfil(String nom, String prenom, String genre, int jour, int mois, int annee) throws Exception {
+	public int getIdProfil(String idUser) {
+		Utilisateur user = em.find(Utilisateur.class, idUser);
+		if (user==null || user.getProfil()==null) {
+			return -1;
+		}
+		return user.getProfil().getId();
+	}
+
+	public Profil ajoutProfil(String nom, String prenom, String genre, int jour, int mois, int annee) throws Exception {
 		if (nom.equals("") || prenom.equals("")) {
 			throw new EmptyFieldException();
 		}
 		if (!validDate(jour,mois,annee)) {
 			throw new Exception();
 		}
-		em.persist(new Profil(nom,prenom,genre,jour,mois,annee));
+		Profil profil = new Profil(nom,prenom,genre,jour,mois,annee);
+		em.persist(profil);
+		return profil;
 	}
 
 	public boolean validDate(int jour, int mois, int annee) {
@@ -113,7 +130,6 @@ public class Facade {
 		return em.find((Profil.class),idProfil);
 	}
 
-	/**  */
 	public int computeAge(int jourNaissance, int moisNaissance, int anneeNaissance) {
 		LocalDateTime currentDate = LocalDateTime.now();
 		int age = currentDate.getYear() - anneeNaissance;
@@ -121,15 +137,6 @@ public class Facade {
 			age--;
 		}
 		return age;
-	}
-
-	/** */
-	public int computeScore(Collection<Badge> listeBadges) {
-		int score = 0;
-		for (Badge badge : listeBadges) {
-			score += badge.getValeur();
-		}
-		return score;
 	}
 
 	public void rendreAmis(int idProfil1,int idProfil2) throws Exception {
@@ -140,6 +147,13 @@ public class Facade {
 		} else {
 			throw new Exception();
 		}
+	}
+
+	public void lierUtilisateurProfil(String idUser, int idProfil) {
+		Utilisateur user = em.find(Utilisateur.class,idUser);
+		Profil profile = em.find(Profil.class,idProfil);
+		user.setProfil(profile);
+		profile.setUtilisateur(user);
 	}
 
 	public void update(Object o) {
